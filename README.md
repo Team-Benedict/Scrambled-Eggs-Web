@@ -6,5 +6,6 @@ This project is essentially the web version of [Scrambled Eggs](https://github.c
 - Game recommending survey
 - Random game suggestions
 - User account creation
+- User submited games for suggestion features
 - Public and private lists creation
 - Profile pages, where lists and favourites can be displayed
