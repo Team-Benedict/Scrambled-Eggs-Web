@@ -1,11 +1,11 @@
 
-import './App.scss';
 import {GameInfo} from './Components';
+import './App.scss';
 
 function App() {
   return (
     <div className="App">
-      <GameInfo publish="Eros" developer="Cedric" />
+      
     </div>
   );
 }
