@@ -1,10 +1,6 @@
-const express = require('express')
-const app = express();
 const port = 3000;
-const index = require('./src/routes/index.route.js');
-
-app.use('/', index);
+const app = require('./config/express.js')
 
 app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`)
+  console.log(`Eggs are being scrambled on port ${port}`)
 });
