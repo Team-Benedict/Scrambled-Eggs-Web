@@ -13,7 +13,7 @@
         "ecmaFeatures": {
             "jsx": true
         },
-        "ecmaVersion": "latest",
+        "ecmaVersion": 2020,
         "sourceType": "module"
     },
     "plugins": [
@@ -21,7 +21,35 @@
         "prettier"
     ],
     "rules": {
-        "prettier/prettier": "error",
-        "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }]
+        "max-len": [
+            2,
+            100,
+            2,
+            {
+                "ignoreUrls": true,
+                "ignoreComments": false
+            }
+        ],
+        "no-restricted-exports": "off",
+        "import/prefer-default-export": "off",
+        "prettier/prettier": [
+            "error",
+            {
+                "trailingComma": "es5",
+                "printWidth": 80,
+                "semi": true,
+                "bracketSpacing": false,
+                "jsxBracketSameLine": true
+            }
+        ],
+        "react/jsx-filename-extension": [
+            1,
+            {
+                "extensions": [
+                    ".js",
+                    ".jsx"
+                ]
+            }
+        ]
     }
 }
