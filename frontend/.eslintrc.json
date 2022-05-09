@@ -38,8 +38,9 @@
                 "trailingComma": "es5",
                 "printWidth": 80,
                 "semi": true,
-                "bracketSpacing": false,
-                "jsxBracketSameLine": true
+                "jsxBracketSameLine": true,
+                "endOfLine": "auto",
+                "parser": "flow"
             }
         ],
         "react/jsx-filename-extension": [
