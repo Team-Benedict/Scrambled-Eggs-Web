@@ -3,14 +3,14 @@
     border-style: solid;
     padding: 10px;
     width: 320px;
+
+    &__title {
+        text-align: center;
+    }
 }
 
 @media only screen and (max-width: 480px) {
     .game-info {
         width: 240px;
     }
-}
-
-.ttl {
-    text-align: center;
 }
