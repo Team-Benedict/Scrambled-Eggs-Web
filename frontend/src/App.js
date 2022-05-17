@@ -1,13 +1,8 @@
 import React from "react";
-import { GameInfo } from "./Components";
 import "./App.scss";
 
 function App() {
-  return (
-    <div className="App">
-      <GameInfo />
-    </div>
-  );
+  return <div className="App" />;
 }
 
 export default App;
