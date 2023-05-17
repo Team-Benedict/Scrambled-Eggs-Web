@@ -12,3 +12,6 @@ A clear and concise description of what you want to happen.
 
 **Possible solutions**
 A clear and concise description of possible implementation solutions.
+
+**Task Breakdown**
+Detail the tasks and expectations of this feature implementation
