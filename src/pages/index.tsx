@@ -73,7 +73,7 @@ const Home: NextPage = () => {
         <div className="flex flex-row bg-gradient-to-b from-[#2e026d] to-[#fff] p-24 rounded-md">
           <div className="mr-8 border-2 p-4 rounded-md">
             {games?.map((item: { id: bigint, name: string }) => (
-              <div className="flex flex-row items-center bg-slate-100 mb-2">
+              <div key={`${item.id}`} className="flex flex-row items-center bg-slate-100 mb-2">
                 <a className="mr-2" href={`/game/${item.id}`}>{item.name}</a>
                 <button type="button" className="ml-auto bg-slate-300 rounded-small p-2" onClick={() => deleteGame(item.id)}>X</button>
               </div>

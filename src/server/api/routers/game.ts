@@ -14,6 +14,18 @@ export async function getGames({prisma} : {prisma: typeof DB}) {
     return prisma.game.findMany();
 }
 
+export async function updateGame({prisma, input} : 
+    {prisma: typeof DB, input: {id: bigint, name: string, description: string}}) {
+    return prisma.game.update({
+        where: {
+            id: input.id,
+        },
+        data: {
+            name: input.name,
+            description: input.description,
+        },
+    })
+}
 
 export const gameRouter = createTRPCRouter({
     get: publicProcedure
@@ -33,6 +45,13 @@ export const gameRouter = createTRPCRouter({
                     // Create a new game in the database
                     const game = await opts.ctx.prisma.game.create({data: input});
 
+                    return game;
+                }),
+    update: publicProcedure
+                .input(z.object({ id: z.bigint(), name: z.string(), description: z.string() }))
+                .mutation(async (opts) => {
+                    const { input, ctx } = opts;
+                    const game = await updateGame({prisma: ctx.prisma, input});
                     return game;
                 }),
     delete: publicProcedure
