@@ -7,8 +7,8 @@ import { api } from "~/utils/api";
 
 type GameData = {
   id: null | string,
-  name: null | string,
-  description: null | string
+  name: string | null,
+  description: string | null
 }
 
 
@@ -36,8 +36,9 @@ const Game = (props : GameData) => {
     await mutationUpdateGame.mutate({id: BigInt(id), name, description}, {
       onSettled(data, variables, context) {
         if (data) {
-          console.log(data);
-          setGame({name: data.name, description: data.description})
+          console.log()
+          const {name: dn, description: dd} : {name: string | null, description: string | null} = data;
+          setGame({name: dn, description: dd})
         }
       },
     })
@@ -89,7 +90,7 @@ export const getStaticPaths = async () => {
   games?.forEach(({ id }) => {
     paths.push(`/game/${id}`);
   });
-  return { paths, fallback: true };
+  return { paths, fallback: 'blocking' };
 }
 
 export const getStaticProps = async ({params}: {params: {slug: string}}) => {
@@ -104,6 +105,7 @@ export const getStaticProps = async ({params}: {params: {slug: string}}) => {
         name: game?.name || null,
         description: game?.description || null
       },
+      revalidate: 10
     };
   }
 

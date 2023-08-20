@@ -16,7 +16,7 @@ export async function getGames({prisma} : {prisma: typeof DB}) {
 
 export async function updateGame({prisma, input} : 
     {prisma: typeof DB, input: {id: bigint, name: string, description: string}}) {
-    return prisma.game.update({
+    const game = await prisma.game.update({
         where: {
             id: input.id,
         },
@@ -25,6 +25,7 @@ export async function updateGame({prisma, input} :
             description: input.description,
         },
     })
+    return game;
 }
 
 export const gameRouter = createTRPCRouter({
