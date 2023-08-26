@@ -1,19 +1,18 @@
 import { game } from "@prisma/client";
-import { useQuery } from "@tanstack/react-query";
 import { type NextPage } from "next";
 import Head from "next/head";
-import {useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 
 import { api } from "~/utils/api";
 
 const Home: NextPage = () => {
-  const [games,setGames] = useState<game[]>()
+  const [games, setGames] = useState<game[]>();
   const [name, setName] = useState<string>("");
 
   const queryAllGame = api.game.getAll.useQuery();
   const mutationCreateGame = api.game.create.useMutation();
   const mutationDeleteGame = api.game.delete.useMutation();
-  
+
   const handleSubmission = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
@@ -23,44 +22,49 @@ const Home: NextPage = () => {
     } catch (e) {
       throw e;
     }
-  }
+  };
 
   const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     event.preventDefault();
 
     setName(event.currentTarget.value);
-  }
+  };
 
   const createGame = async (name: string) => {
-    await mutationCreateGame.mutate({name}, {
-      onSettled(data, variables, context) {
-        if (data) {
-          const current = games;
-          current?.push(data);
-          setGames(current);
-        }
-      },
-    })
-  }
+    await mutationCreateGame.mutate(
+      { name },
+      {
+        onSettled(data, variables, context) {
+          if (data) {
+            const current = games;
+            current?.push(data);
+            setGames(current);
+          }
+        },
+      }
+    );
+  };
 
   const deleteGame = async (id: bigint) => {
-    await mutationDeleteGame.mutate({id}, {
-      onSettled(data, variables, context) {
-        if (data) {
-          const {id: deletedId} = data;
-          const updatedGames = games?.filter((game) => game.id != deletedId)
-          setGames(updatedGames);
-        }
-      },
-    })
-  }
+    await mutationDeleteGame.mutate(
+      { id },
+      {
+        onSettled(data, variables, context) {
+          if (data) {
+            const { id: deletedId } = data;
+            const updatedGames = games?.filter((game) => game.id != deletedId);
+            setGames(updatedGames);
+          }
+        },
+      }
+    );
+  };
 
   useEffect(() => {
     if (queryAllGame.isSuccess) {
       setGames(queryAllGame.data);
     }
   }, [queryAllGame.isSuccess]);
-  
 
   return (
     <>
@@ -70,21 +74,41 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className="flex min-h-screen flex-col items-center justify-center">
-        <div className="flex flex-row bg-gradient-to-b from-[#2e026d] to-[#fff] p-24 rounded-md">
-          <div className="mr-8 border-2 p-4 rounded-md">
-            {games?.map((item: { id: bigint, name: string }) => (
-              <div key={`${item.id}`} className="flex flex-row items-center bg-slate-100 mb-2">
-                <a className="mr-2" href={`/game/${item.id}`}>{item.name}</a>
-                <button type="button" className="ml-auto bg-slate-300 rounded-small p-2" onClick={() => deleteGame(item.id)}>X</button>
+        <div className="flex flex-row rounded-md bg-gradient-to-b from-[#2e026d] to-[#fff] p-24">
+          <div className="mr-8 rounded-md border-2 p-4">
+            {games?.map((item: { id: bigint; name: string }) => (
+              <div
+                key={`${item.id}`}
+                className="mb-2 flex flex-row items-center bg-slate-100"
+              >
+                <a className="mr-2" href={`/game/${item.id}`}>
+                  {item.name}
+                </a>
+                <button
+                  type="button"
+                  className="rounded-small ml-auto bg-slate-300 p-2"
+                  onClick={() => deleteGame(item.id)}
+                >
+                  X
+                </button>
               </div>
             ))}
           </div>
           <form className="flex flex-col" onSubmit={handleSubmission}>
             <div className="flex flex-col">
               <label htmlFor="game-name">Name</label>
-              <input id="game-name" name="name" type="text" value={name} className="mb-2" onChange={handleNameChange}></input>
+              <input
+                id="game-name"
+                name="name"
+                type="text"
+                value={name}
+                className="mb-2"
+                onChange={handleNameChange}
+              ></input>
             </div>
-            <button type="submit" className="bg-slate-400 p-2 radius-2">Create!</button>
+            <button type="submit" className="radius-2 bg-slate-400 p-2">
+              Create!
+            </button>
           </form>
         </div>
       </main>
