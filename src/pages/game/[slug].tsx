@@ -1,22 +1,23 @@
 import Head from "next/head";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { getGame, getGames, updateGame } from "~/server/api/routers/game";
 
 import { prisma } from "~/server/db";
 import { api } from "~/utils/api";
 
 type GameData = {
-  id: null | string,
-  name: string | null,
-  description: string | null
-}
+  id: string | null;
+  name: string | null;
+  description: string | null;
+};
 
-
-const Game = (props : GameData) => {
-  const [game, setGame] = useState<{name: GameData["name"], description: GameData["description"]}>
-    ({name: props?.name || "Game not found", description: props?.description});
-  const [name, setName] = useState<string>(props.name || "");
-  const [description, setDescription] = useState<string>(props.description || "");
+const Game = (props: GameData) => {
+  const [game, setGame] = useState<{
+    name: GameData["name"];
+    description: GameData["description"];
+  }>({ name: "", description: "" });
+  const [name, setName] = useState<string>("");
+  const [description, setDescription] = useState<string>("");
 
   const mutationUpdateGame = api.game.update.useMutation();
 
@@ -24,36 +25,61 @@ const Game = (props : GameData) => {
     event.preventDefault();
 
     const { id } = props;
-    
+
     if (id) {
-      const game = await updateGame({id, name, description})
+      const game = await updateGame({ id, name, description });
       console.log(game);
     }
-  }
+  };
 
-  const updateGame = async ({id, name, description} : 
-    {id: string, name: string, description: string}) => {
-    await mutationUpdateGame.mutate({id: BigInt(id), name, description}, {
-      onSettled(data, variables, context) {
-        if (data) {
-          console.log()
-          const {name: dn, description: dd} : {name: string | null, description: string | null} = data;
-          setGame({name: dn, description: dd})
-        }
-      },
-    })
-  }
-
+  const updateGame = async ({
+    id,
+    name,
+    description,
+  }: {
+    id: string;
+    name: string;
+    description: string;
+  }) => {
+    await mutationUpdateGame.mutate(
+      { id: BigInt(id), name, description },
+      {
+        onSettled(data, variables, context) {
+          if (data) {
+            console.log();
+            const {
+              name: dn,
+              description: dd,
+            }: { name: string | null; description: string | null } = data;
+            setGame({ name: dn, description: dd });
+          }
+        },
+      }
+    );
+  };
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     event.preventDefault();
-   
+
     if (event.currentTarget.name === "description") {
       setDescription(event.currentTarget.value);
     } else if (event.currentTarget.name === "name") {
       setName(event.currentTarget.value);
     }
-  }
+  };
+
+  useEffect(() => {
+    const n = props?.name || "";
+    const d = props?.description || "";
+    // initialize game data
+    setGame({
+      name: n,
+      description: d,
+    });
+    // initialize form values
+    setName(n);
+    setDescription(d);
+  }, [props]);
 
   return (
     <>
@@ -64,20 +90,39 @@ const Game = (props : GameData) => {
       </Head>
       <main className="flex min-h-screen flex-row items-center justify-center">
         <div className="items-left mr-4">
-          <h2 className="text-xl mb-2">{game.name || "Game does not exist"}</h2>
-          <div className="gap-2 items-center">
+          <h2 className="mb-2 text-xl">{game.name || "Unknown"}</h2>
+          <div className="items-center gap-2">
             <h3 className="text-md font-bold">Description</h3>
             <p>{game.description}</p>
           </div>
         </div>
-        <form className="flex flex-col bg-gradient-to-b from-[#2e026d] to-[#fff] p-24 rounded-md" onSubmit={handleSubmission}>
+        <form
+          className="flex flex-col rounded-md bg-gradient-to-b from-[#2e026d] to-[#fff] p-24"
+          onSubmit={handleSubmission}
+        >
           <div className="flex flex-col">
             <label htmlFor="game-name">Name</label>
-            <input id="game-name" name="name" type="text" className="mb-2" value={name} onChange={handleChange}></input>
+            <input
+              id="game-name"
+              name="name"
+              type="text"
+              className="mb-2"
+              value={name}
+              onChange={handleChange}
+            ></input>
             <label htmlFor="game-desc">Description</label>
-            <input id="game-desc" name="description" type="text" className="mb-2" value={description} onChange={handleChange}></input>
+            <input
+              id="game-desc"
+              name="description"
+              type="text"
+              className="mb-2"
+              value={description}
+              onChange={handleChange}
+            ></input>
           </div>
-          <button type="submit" className="bg-slate-400 p-2 radius-2">Update!</button>
+          <button type="submit" className="radius-2 bg-slate-400 p-2">
+            Update!
+          </button>
         </form>
       </main>
     </>
@@ -90,28 +135,31 @@ export const getStaticPaths = async () => {
   games?.forEach(({ id }) => {
     paths.push(`/game/${id}`);
   });
-  return { paths, fallback: 'blocking' };
-}
+  return { paths, fallback: "blocking" };
+};
 
-export const getStaticProps = async ({params}: {params: {slug: string}}) => {
-  console.log(params);
+export const getStaticProps = async ({
+  params,
+}: {
+  params: { slug: string };
+}) => {
   if (params) {
-    const {slug} : {slug: string} = params;
-    const game = await getGame({prisma, input: {id: BigInt(slug)}})
-    console.log(game) 
+    const { slug }: { slug: string } = params;
+    const game = await getGame({ prisma, input: { id: BigInt(slug) } });
+    console.log(game);
     return {
       props: {
         id: slug,
         name: game?.name || null,
-        description: game?.description || null
+        description: game?.description || null,
       },
-      revalidate: 10
+      revalidate: 10,
     };
   }
 
   return {
     props: {},
   };
-}
+};
 
 export default Game;
