@@ -1,6 +1,6 @@
 import { type AppType } from "next/app";
 
-import { api } from "~/utils/api";
+import { api } from "~/client/api";
 
 import "~/styles/globals.css";
 

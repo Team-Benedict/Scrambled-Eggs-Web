@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { getGame, getGames, updateGame } from "~/server/api/routers/game";
 
 import { prisma } from "~/server/db";
-import { api } from "~/utils/api";
+import { api } from "~/client/api";
 
 type GameData = {
   id: string | null;

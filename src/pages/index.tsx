@@ -3,26 +3,16 @@ import { type NextPage } from "next";
 import Head from "next/head";
 import { useState, useEffect } from "react";
 
-import { api } from "~/utils/api";
+import { api } from "../client/api";
+import { Game } from "~/client/api/game";
 
 const Home: NextPage = () => {
   const [games, setGames] = useState<game[]>();
   const [name, setName] = useState<string>("");
 
+  const gameApi = Game();
+
   const queryAllGame = api.game.getAll.useQuery();
-  const mutationCreateGame = api.game.create.useMutation();
-  const mutationDeleteGame = api.game.delete.useMutation();
-
-  const handleSubmission = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-
-    try {
-      await createGame(name);
-      setName("");
-    } catch (e) {
-      throw e;
-    }
-  };
 
   const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     event.preventDefault();
@@ -30,34 +20,26 @@ const Home: NextPage = () => {
     setName(event.currentTarget.value);
   };
 
-  const createGame = async (name: string) => {
-    await mutationCreateGame.mutate(
-      { name },
-      {
-        onSettled(data, variables, context) {
-          if (data) {
-            const current = games;
-            current?.push(data);
-            setGames(current);
-          }
-        },
-      }
-    );
+  const deleteGame = async (id: bigint) => {
+    gameApi.delete(id, (data) => {
+      const { id: deletedId } = data;
+      const updatedGames = games?.filter((game) => game.id != deletedId);
+      setGames(updatedGames);
+    });
   };
 
-  const deleteGame = async (id: bigint) => {
-    await mutationDeleteGame.mutate(
-      { id },
-      {
-        onSettled(data, variables, context) {
-          if (data) {
-            const { id: deletedId } = data;
-            const updatedGames = games?.filter((game) => game.id != deletedId);
-            setGames(updatedGames);
-          }
-        },
-      }
-    );
+  const createGame = async (name: string) => {
+    gameApi.create(name, (data) => {
+      const current = games;
+      current?.push(data);
+      setGames(current);
+      setName("");
+    });
+  };
+
+  const handleSubmission = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    createGame(name);
   };
 
   useEffect(() => {
